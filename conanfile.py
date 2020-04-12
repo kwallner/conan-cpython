@@ -87,6 +87,3 @@ class ConanProject(ConanFile):
         self.cpp_info.includedirs = ['include']
         self.cpp_info.libdirs = ['libs']
         self.cpp_info.bindirs = ['bin']
-        self.env_info.PATH.insert(0, os.path.join(self.package_folder, "bin"))
-        self.env_info.PYTHONPATH.insert(0, os.path.join(self.package_folder, "Lib"))
-        self.env_info.PYTHONHOME = self.package_folder
