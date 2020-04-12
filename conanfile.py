@@ -12,9 +12,6 @@ class ConanProject(ConanFile):
     description = "Python Programming Language Version 3"
     settings = "os", "arch", "compiler"
     generators  = "txt"
-    @property
-    def python_interpreter(self):
-        return "bin\\python.exe" if self.settings.os == "Windows" else "./bin/python3"
 
     def configure(self):
         if self.settings.os == "Windows":
@@ -64,8 +61,9 @@ class ConanProject(ConanFile):
     def package(self):
         if self.settings.os == "Windows":
             out_folder = {"x86_64": "amd64", "x86": "win32"}.get(str(self.settings.arch))
-            pcbuild_folder = os.path.join(self.build_folder, "Python-%s" % self.version, "PCBuild", out_folder)
-            pc_folder = os.path.join(self.build_folder, "Python-%s" % self.version, "PC")
+            python_folder = os.path.join(self.build_folder, "Python-%s" % self.version)
+            pcbuild_folder = os.path.join(python_folder, "PCBuild", out_folder)
+            pc_folder = os.path.join(python_folder, "PC")
             self.copy(pattern="*.dll", dst="bin", src=pcbuild_folder, keep_path=False)
             self.copy(pattern="*.exe", dst="bin", src=pcbuild_folder, keep_path=False)
             self.copy(pattern="*.lib", dst="libs", src=pcbuild_folder, keep_path=False)
@@ -73,7 +71,7 @@ class ConanProject(ConanFile):
             shutil.copytree(os.path.join(self.build_folder, "Python-%s" % self.version, "Include"), os.path.join(self.package_folder, "include"))
             self.copy(pattern="*.h", dst="include", src=pc_folder, keep_path=False)
             shutil.copytree(os.path.join(self.build_folder, "Python-%s" % self.version, "Lib"), os.path.join(self.package_folder, "Lib"))
-            self.copy(pattern="LICENSE", dst=".", src=pcbuild_folder, keep_path=False)
+            self.copy(pattern="LICENSE", dst=".", src=python_folder, keep_path=False)
         # Remove python compiled files
         for filename in glob.glob(os.path.join(self.package_folder, "**", "*.pyc"), recursive=True):
             os.remove(filename)
