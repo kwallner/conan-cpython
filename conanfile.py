@@ -12,6 +12,8 @@ class ConanProject(ConanFile):
     description = "Python Programming Language Version 3"
     settings = "os", "arch", "compiler"
     generators  = "txt"
+    options = { "with_tkinter" : [False,True] }
+    default_options = { "with_tkinter" : False }
 
     def configure(self):
         if self.settings.os == "Windows":
@@ -29,10 +31,14 @@ class ConanProject(ConanFile):
         tools.unzip("Python-%s.tgz" % self.version)
         if tools.os_info.is_windows:  
             with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
-                self.run("get_externals.bat --tkinter-src --openssl-src")
-            with tools.chdir(os.path.join("Python-%s" % self.version, "externals")):
-                for filename in glob.glob(os.path.join("**", "X.h"), recursive=True):
-                    tools.replace_in_file(filename, '''#ifndef X_H''', '''
+                if self.options.with_tkinter:
+                    self.run("get_externals.bat --tkinter-src")
+                else:
+                    self.run("get_externals.bat")
+            if self.options.with_tkinter:
+                with tools.chdir(os.path.join("Python-%s" % self.version, "externals")):
+                    for filename in glob.glob(os.path.join("**", "X.h"), recursive=True):
+                        tools.replace_in_file(filename, '''#ifndef X_H''', '''
 #include <windows.h>
 #ifndef X_H''')
                     
@@ -44,8 +50,8 @@ class ConanProject(ConanFile):
             with tools.environment_append(env_build.vars):
                 with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
                     with tools.vcvars(self.settings):
-                        self.run("prepare_tcltk.bat")
-                        self.run("prepare_ssl.bat")
+                        if self.options.with_tkinter:
+                            self.run("prepare_tcltk.bat")
                         self.run("build.bat -p x64 -d")
                         self.run("build.bat -p x64")
         else:
