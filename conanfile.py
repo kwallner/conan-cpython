@@ -86,6 +86,9 @@ class ConanProject(ConanFile):
             self.copy(pattern="*.h", dst="include", src=pc_folder, keep_path=False)
             shutil.copytree(os.path.join(self.build_folder, "Python-%s" % self.version, "Lib"), os.path.join(self.package_folder, "Lib"))
             self.copy(pattern="LICENSE", dst=".", src=python_folder, keep_path=False)
+            if self.options.with_tkinter:
+                from distutils.dir_util import copy_tree
+                copy_tree(os.path.join(self.build_folder, "Python-%s" % self.version, "externals", "tcltk-8.6.9.0", "amd64"), self.package_folder)
         # Remove python compiled files
         for filename in glob.glob(os.path.join(self.package_folder, "**", "*.pyc"), recursive=True):
             os.remove(filename)
