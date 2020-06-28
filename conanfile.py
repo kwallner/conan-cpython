@@ -42,6 +42,14 @@ class ConanProject(ConanFile):
                         tools.replace_in_file(filename, '''#ifndef X_H''', '''
 #include <windows.h>
 #ifndef X_H''')              
+                    for filename in glob.glob(os.path.join("**", "tkWin.h"), recursive=True):
+                        tools.replace_in_file(filename, '''#ifndef _TKWIN''', '''
+#include <windows.h>
+#ifndef _TKWIN''')              
+                    for filename in glob.glob(os.path.join("**", "tclWin.h"), recursive=True):
+                        tools.replace_in_file(filename, '''#ifndef _TCLWIN''', '''
+#include <windows.h>
+#ifndef _TCLWIN''')              
         os.remove("Python-%s.tgz" % self.version)
 
     def build(self):
