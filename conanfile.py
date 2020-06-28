@@ -6,7 +6,8 @@ from conans import ConanFile, VisualStudioBuildEnvironment, tools, errors, AutoT
     
 class ConanProject(ConanFile):
     name        = "cpython"
-    version     = "3.7.7"
+    version     = "3.7.8"
+    _sha356_checksum = "0e25835614dc221e3ecea5831b38fa90788b5389b99b675a751414c858789ab0"
     url         = "https://github.com/kwallner/conan-cpython"
     license     = "Python Software Foundation License Version 2"
     description = "Python Programming Language Version 3"
@@ -27,7 +28,7 @@ class ConanProject(ConanFile):
             installer.install("libffi-dev") 
     
     def source(self):
-        tools.download("https://www.python.org/ftp/python/%s/Python-%s.tgz" % (self.version, self.version), "Python-%s.tgz" % self.version, sha256="8c8be91cd2648a1a0c251f04ea0bb4c2a5570feb9c45eaaa2241c785585b475a")
+        tools.download("https://www.python.org/ftp/python/%s/Python-%s.tgz" % (self.version, self.version), "Python-%s.tgz" % self.version, sha256=self._sha356_checksum)
         tools.unzip("Python-%s.tgz" % self.version)
         if tools.os_info.is_windows:  
             with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
@@ -40,8 +41,7 @@ class ConanProject(ConanFile):
                     for filename in glob.glob(os.path.join("**", "X.h"), recursive=True):
                         tools.replace_in_file(filename, '''#ifndef X_H''', '''
 #include <windows.h>
-#ifndef X_H''')
-                    
+#ifndef X_H''')              
         os.remove("Python-%s.tgz" % self.version)
 
     def build(self):
