@@ -37,19 +37,18 @@ class ConanProject(ConanFile):
                 else:
                     self.run("get_externals.bat")
             if self.options.with_tkinter:
-                with tools.chdir(os.path.join("Python-%s" % self.version, "externals")):
+                with tools.chdir(os.path.join("Python-%s" % self.version, "externals")): 
                     for filename in glob.glob(os.path.join("**", "X.h"), recursive=True):
                         tools.replace_in_file(filename, '''#ifndef X_H''', '''
+#ifdef _WIN32
+#define None Windows_h_None
+#define ControlMask  Windows_h_ControlMask
 #include <windows.h>
-#ifndef X_H''')              
-                    for filename in glob.glob(os.path.join("**", "tkWin.h"), recursive=True):
-                        tools.replace_in_file(filename, '''#ifndef _TKWIN''', '''
-#include <windows.h>
-#ifndef _TKWIN''')              
-                    for filename in glob.glob(os.path.join("**", "tclWin.h"), recursive=True):
-                        tools.replace_in_file(filename, '''#ifndef _TCLWIN''', '''
-#include <windows.h>
-#ifndef _TCLWIN''')              
+#undef None
+#undef ControlMask
+#endif
+
+#ifndef X_H''')           
         os.remove("Python-%s.tgz" % self.version)
 
     def build(self):
