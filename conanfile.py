@@ -62,6 +62,7 @@ class ConanProject(ConanFile):
                         self.run("build.bat -p x64 -d")
                         self.run("build.bat -p x64")
         else:
+            import stat
             with tools.chdir("Python-%s" % self.version):
                 os.chmod("configure", 
                     stat.S_IRUSR |
