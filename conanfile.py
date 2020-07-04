@@ -30,7 +30,10 @@ class ConanProject(ConanFile):
     def source(self):
         tools.download("https://www.python.org/ftp/python/%s/Python-%s.tgz" % (self.version, self.version), "Python-%s.tgz" % self.version, sha256=self._sha356_checksum)
         tools.unzip("Python-%s.tgz" % self.version)
-        if tools.os_info.is_windows:  
+        os.remove("Python-%s.tgz" % self.version)
+
+    def build(self):
+        if self.settings.os == "Windows":
             with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
                 if self.options.with_tkinter:
                     self.run("get_externals.bat --tkinter-src")
@@ -48,11 +51,7 @@ class ConanProject(ConanFile):
 #undef ControlMask
 #endif
 
-#ifndef X_H''')           
-        os.remove("Python-%s.tgz" % self.version)
-
-    def build(self):
-        if self.settings.os == "Windows":
+#ifndef X_H''')
             env_build = VisualStudioBuildEnvironment(self)
             with tools.environment_append(env_build.vars):
                 with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
