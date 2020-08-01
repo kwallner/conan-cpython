@@ -85,8 +85,8 @@ class ConanProject(ConanFile):
             python_folder = os.path.join(self.build_folder, "Python-%s" % self.version)
             pcbuild_folder = os.path.join(python_folder, "PCBuild", out_folder)
             pc_folder = os.path.join(python_folder, "PC")
-            self.copy(pattern="*.dll", dst="bin", src=pcbuild_folder, keep_path=False)
-            self.copy(pattern="*.exe", dst="bin", src=pcbuild_folder, keep_path=False)
+            self.copy(pattern="*.dll", dst=".", src=pcbuild_folder, keep_path=False)
+            self.copy(pattern="*.exe", dst=".", src=pcbuild_folder, keep_path=False)
             self.copy(pattern="*.lib", dst="libs", src=pcbuild_folder, keep_path=False)
             self.copy(pattern="*.pyd", dst="DLLs", src=pcbuild_folder, keep_path=False)
             shutil.copytree(os.path.join(self.build_folder, "Python-%s" % self.version, "Include"), os.path.join(self.package_folder, "include"))
@@ -108,4 +108,7 @@ class ConanProject(ConanFile):
     def package_info(self):
         self.cpp_info.includedirs = ['include']
         self.cpp_info.libdirs = ['libs']
-        self.cpp_info.bindirs = ['bin']
+        if self.settings.os == "Windows":
+            self.cpp_info.bindirs = ['.']
+        else:
+            self.cpp_info.bindirs = ['bin']
