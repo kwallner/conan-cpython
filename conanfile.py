@@ -6,8 +6,8 @@ from conans import ConanFile, VisualStudioBuildEnvironment, tools, errors, AutoT
     
 class ConanProject(ConanFile):
     name        = "cpython"
-    version     = "3.7.8"
-    _sha356_checksum = "0e25835614dc221e3ecea5831b38fa90788b5389b99b675a751414c858789ab0"
+    version     = "3.7.9"
+    _sha356_checksum = "39b018bc7d8a165e59aa827d9ae45c45901739b0bbb13721e4f973f3521c166a"
     url         = "https://github.com/kwallner/conan-cpython"
     license     = "Python Software Foundation License Version 2"
     description = "Python Programming Language Version 3"
