@@ -16,16 +16,12 @@ class ConanProject(ConanFile):
     options = { "with_tkinter" : [False,True] }
     default_options = { "with_tkinter" : False }
 
-    def configure(self):
-        if self.settings.os == "Windows":
-            if self.settings.compiler != "Visual Studio" or self.settings.compiler.version != "15":
-                raise errors.ConanInvalidConfiguration("Compiler is not supported.")
-
     def system_requirements(self):
         if self.settings.os == "Linux":
             pack_name = self.name
             installer = tools.SystemPackageTool()
             installer.install("libffi-dev") 
+            installer.install("libz-dev") 
     
     def source(self):
         tools.download("https://www.python.org/ftp/python/%s/Python-%s.tgz" % (self.version, self.version), "Python-%s.tgz" % self.version, sha256=self._sha356_checksum)
@@ -34,6 +30,12 @@ class ConanProject(ConanFile):
 
     def build(self):
         if self.settings.os == "Windows":
+            if self.settings.compiler == "Visual Studio" and self.settings.compiler.version == "15": # and (not self.settings.compiler.toolset or self.settings.compiler.toolset == "v141"):
+                pass
+            elif self.settings.compiler == "Visual Studio" and self.settings.compiler.version == "16" and self.settings.compiler.toolset == "v141":
+                pass
+            else:
+                raise errors.ConanInvalidConfiguration("Compiler is not supported.")
             with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
                 if self.options.with_tkinter:
                     self.run("get_externals.bat --tkinter-src")
