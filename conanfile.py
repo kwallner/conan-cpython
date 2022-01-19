@@ -6,8 +6,8 @@ from conans import ConanFile, VisualStudioBuildEnvironment, tools, errors, AutoT
     
 class ConanProject(ConanFile):
     name        = "cpython"
-    version     = "3.7.8"
-    _sha356_checksum = "0e25835614dc221e3ecea5831b38fa90788b5389b99b675a751414c858789ab0"
+    version     = "3.7.9"
+    _sha356_checksum = "39b018bc7d8a165e59aa827d9ae45c45901739b0bbb13721e4f973f3521c166a"
     url         = "https://github.com/kwallner/conan-cpython"
     license     = "Python Software Foundation License Version 2"
     description = "Python Programming Language Version 3"
@@ -16,16 +16,12 @@ class ConanProject(ConanFile):
     options = { "with_tkinter" : [False,True] }
     default_options = { "with_tkinter" : False }
 
-    def configure(self):
-        if self.settings.os == "Windows":
-            if self.settings.compiler != "Visual Studio" or self.settings.compiler.version != "15":
-                raise errors.ConanInvalidConfiguration("Compiler is not supported.")
-
     def system_requirements(self):
         if self.settings.os == "Linux":
             pack_name = self.name
             installer = tools.SystemPackageTool()
             installer.install("libffi-dev") 
+            installer.install("libz-dev") 
     
     def source(self):
         tools.download("https://www.python.org/ftp/python/%s/Python-%s.tgz" % (self.version, self.version), "Python-%s.tgz" % self.version, sha256=self._sha356_checksum)
@@ -34,6 +30,12 @@ class ConanProject(ConanFile):
 
     def build(self):
         if self.settings.os == "Windows":
+            if self.settings.compiler == "Visual Studio" and self.settings.compiler.version == "15": # and (not self.settings.compiler.toolset or self.settings.compiler.toolset == "v141"):
+                pass
+            elif self.settings.compiler == "Visual Studio" and self.settings.compiler.version == "16" and self.settings.compiler.toolset == "v141":
+                pass
+            else:
+                raise errors.ConanInvalidConfiguration("Compiler is not supported.")
             with tools.chdir(os.path.join("Python-%s" % self.version, "PCBuild")):
                 if self.options.with_tkinter:
                     self.run("get_externals.bat --tkinter-src")
